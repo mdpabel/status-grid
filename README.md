@@ -31,7 +31,7 @@ Cloudflare Pages remains possible: `dist/_worker.js` is also a Pages advanced-mo
 
 ## Checker limits
 
-The browser accepts up to 50 HTTP(S) URLs and sends them in batches of five. Each URL follows at most six redirects, uses an eight-second timeout per hop, and reads at most 128 KB of final HTML. The Worker rejects IP literals, local hostnames, nonstandard ports, and redirects to them. Cloudflare's outbound `fetch()` rules also apply. A failed fetch means the checker could not verify that URL; it does not prove the website is offline.
+The browser has no fixed URL count per run. It sends URLs in batches of five, paces batch starts at least 5.5 seconds apart, and retries API rate limits up to three times. Results are paginated at 100 per page and the CSV includes all completed results. Keep the tab open for long runs. TXT and CSV imports are limited to 10 MB for browser responsiveness. Each URL follows at most six redirects, uses an eight-second timeout per hop, and reads at most 128 KB of final HTML. The Worker rejects IP literals, local hostnames, nonstandard ports, and redirects to them. Cloudflare's outbound `fetch()` rules also apply. A failed fetch means the checker could not verify that URL; it does not prove the website is offline.
 
 The in-memory limit of 60 URLs per minute per IP is a best-effort guard within a Worker instance. Configure Cloudflare rate limiting if a strict global limit is needed. Five URLs per request stay within the Cloudflare Workers Free plan's 50 external subrequests per invocation even if each follows six redirects.
 

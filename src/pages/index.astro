@@ -1,13 +1,13 @@
 ---
 import Base from '../layouts/Base.astro';
 ---
-<Base description="Free bulk HTTP status checker for up to 50 URLs. Trace redirect chains, find errors, inspect canonical and noindex signals, and export a CSV report.">
+<Base description="Free bulk HTTP status checker for large URL lists. Trace redirect chains, find errors, inspect canonical and noindex signals, and export a CSV report.">
   <section class="hero">
     <div class="container hero-grid">
       <div class="hero-copy">
         <div class="eyebrow">The URL audit workspace</div>
         <h1>Every URL has a <em>story.</em><br />See the whole path.</h1>
-        <p>Check up to 50 URLs at once. Follow every redirect, spot broken destinations, and surface the HTTP and SEO signals that need your attention.</p>
+        <p>Check large URL lists in manageable batches. Follow every redirect, spot broken destinations, and surface the HTTP and SEO signals that need your attention.</p>
         <div class="hero-points"><span><i></i> No account needed</span><span><i></i> Full redirect paths</span><span><i></i> Exportable results</span></div>
         <a class="hero-link" href="#checker">Start checking <span aria-hidden="true">↓</span></a>
       </div>
@@ -26,11 +26,11 @@ import Base from '../layouts/Base.astro';
     <div class="container">
       <div class="tool-intro"><div><span class="eyebrow">01 / Run a check</span><h2>Turn a URL list into a clear action list.</h2></div><p>Paste one URL per line, or import a TXT or CSV file. We'll check the live HTTP response and follow redirects to the final page.</p></div>
       <div class="tool-shell">
-        <div class="tool-bar"><span><span class="tool-icon">⌁</span> Bulk status checker</span><span class="tool-cap">UP TO 50 URLS</span></div>
+        <div class="tool-bar"><span><span class="tool-icon">⌁</span> Bulk status checker</span><span class="tool-cap">NO FIXED LIST LIMIT</span></div>
         <div class="tool-body">
-          <div class="input-head"><label for="urls">Your URLs</label><span id="url-count">0 / 50</span></div>
+          <div class="input-head"><label for="urls">Your URLs</label><span id="url-count">0 URLs</span></div>
           <textarea id="urls" spellcheck="false" placeholder="https://example.com/old-page&#10;https://example.com/product&#10;https://example.com/contact" aria-describedby="input-help"></textarea>
-          <div class="input-footer"><span id="input-help">One URL per line. A CSV may include expected destinations in column two.</span><div><button class="text-button" id="sample-button" type="button">Use sample</button><label class="text-button upload" for="file-input">↑ Import TXT / CSV</label><input id="file-input" type="file" accept=".txt,.csv,text/plain,text/csv" hidden /></div></div>
+          <div class="input-footer"><span id="input-help">One URL per line. A CSV may include expected destinations in column two. Checks run at about 50 URLs per minute; keep this tab open.</span><div><button class="text-button" id="sample-button" type="button">Use sample</button><label class="text-button upload" for="file-input">↑ Import TXT / CSV</label><input id="file-input" type="file" accept=".txt,.csv,text/plain,text/csv" hidden /></div></div>
           <div class="tool-actions"><button class="button check-button" id="check-button" type="button">Check URLs <span aria-hidden="true">→</span></button><button class="cancel-button" id="cancel-button" type="button" hidden>Stop check</button><span id="progress-text" role="status" aria-live="polite"></span></div>
           <div id="error-message" class="error-message" role="alert" hidden></div>
         </div>
@@ -40,6 +40,7 @@ import Base from '../layouts/Base.astro';
         <div id="network-notice" class="network-notice" hidden><strong>The checker server cannot reach external websites.</strong> These results say nothing about whether the sites are online. Run StatusGrid on a server with outbound HTTP and HTTPS access.</div>
         <div class="filter-row" role="group" aria-label="Filter results"><button class="filter active" data-filter="all" type="button">All <span id="count-all">0</span></button><button class="filter" data-filter="issues" type="button">Needs attention <span id="count-issues">0</span></button><button class="filter" data-filter="unverified" type="button">Could not verify <span id="count-unverified">0</span></button><button class="filter" data-filter="redirects" type="button">Redirected <span id="count-redirects">0</span></button><button class="filter" data-filter="healthy" type="button">Healthy <span id="count-healthy">0</span></button></div>
         <div class="table-wrap"><table><thead><tr><th>URL / redirect path</th><th>Final status</th><th>Time</th><th>Hops</th><th>Signals</th></tr></thead><tbody id="results-body"></tbody></table></div>
+        <div class="result-pagination" id="result-pagination" hidden><button class="text-button" id="previous-page" type="button">Previous</button><span id="page-label" aria-live="polite"></span><button class="text-button" id="next-page" type="button">Next</button></div>
         <p class="results-note">A missing response, 403, or 429 may be specific to this server-side check. Compare the URL in a browser before treating it as a site-wide outage.</p>
       </div>
     </div>
@@ -52,11 +53,11 @@ import Base from '../layouts/Base.astro';
     <article class="feature-card"><div class="feature-icon">⇄</div><h3>Migration map checks</h3><p>Import source and expected destination columns. Flag redirects that land on the wrong URL, then export the findings.</p></article>
   </div></div></section>
 
-  <section class="workflow-section"><div class="container workflow-grid"><div><span class="eyebrow">A faster way to verify</span><h2>From a messy list to a better next step.</h2><p>Built for migration spot checks, broken-link cleanup, content inventories, and routine technical SEO reviews.</p><a href="/how-it-works/">Learn how checks work <span aria-hidden="true">↗</span></a></div><div class="steps"><div><b>01</b><span><strong>Add URLs</strong><small>Paste or import up to 50 public URLs.</small></span></div><div><b>02</b><span><strong>Trace each response</strong><small>Follow redirects and read page signals.</small></span></div><div><b>03</b><span><strong>Prioritize and export</strong><small>Filter issues and take the report with you.</small></span></div></div></div></section>
+  <section class="workflow-section"><div class="container workflow-grid"><div><span class="eyebrow">A faster way to verify</span><h2>From a messy list to a better next step.</h2><p>Built for migration spot checks, broken-link cleanup, content inventories, and routine technical SEO reviews.</p><a href="/how-it-works/">Learn how checks work <span aria-hidden="true">↗</span></a></div><div class="steps"><div><b>01</b><span><strong>Add URLs</strong><small>Paste or import your list of public URLs.</small></span></div><div><b>02</b><span><strong>Trace each response</strong><small>Follow redirects and read page signals.</small></span></div><div><b>03</b><span><strong>Prioritize and export</strong><small>Filter issues and take the report with you.</small></span></div></div></div></section>
 
   <section class="learn-section"><div class="container"><div class="learn-head"><div class="section-heading"><span class="eyebrow">Learn the language of the web</span><h2>Know what the response means.</h2></div><a href="/blog/">View all guides <span aria-hidden="true">↗</span></a></div><div class="learn-grid"><a class="learn-card" href="/blog/http-status-codes-seo/"><span class="learn-tag">The essentials · 8 min read</span><h3>HTTP status codes and SEO: what actually matters</h3><p>A practical map of 2xx, 3xx, 4xx, and 5xx responses and what to investigate next.</p><span class="learn-arrow">Read guide ↗</span></a><a class="learn-card" href="/blog/301-vs-302-redirects/"><span class="learn-tag">Redirects · 6 min read</span><h3>301 vs 302 redirects: choosing the right move</h3><p>Learn when a move is permanent, when it is temporary, and why the destination matters.</p><span class="learn-arrow">Read guide ↗</span></a><a class="learn-card" href="/blog/404-vs-410-soft-404/"><span class="learn-tag">Errors · 7 min read</span><h3>404, 410, and soft 404: a cleanup playbook</h3><p>Choose the right response for removed pages and avoid “success” pages that are actually errors.</p><span class="learn-arrow">Read guide ↗</span></a></div></div></section>
 
-  <section class="faq-section"><div class="container faq-grid"><div class="section-heading"><span class="eyebrow">Quick answers</span><h2>Before you run a check.</h2><p>Know what the tool can tell you and where a deeper investigation starts.</p></div><div class="faq-list"><details><summary>Can I check multiple URLs at once?</summary><p>Yes. Paste or import up to 50 public HTTP or HTTPS URLs. The checker processes them in small batches and lets you export the report as CSV.</p></details><details><summary>Does a 200 status mean my page is indexed?</summary><p>No. A 200 means the server successfully answered the request. Indexing also depends on content, access, directives, canonicalization, and search engine decisions. Check Search Console for Google's view.</p></details><details><summary>Will this detect redirect loops and broken destinations?</summary><p>The checker follows up to six redirects, reports each hop, and flags loops, excessive chains, and final error responses.</p></details><details><summary>Why does a site show a 403 here but load in my browser?</summary><p>Some sites treat automated server requests differently from browser traffic. Verify the URL in a browser and inspect server or security logs before treating a 403 as a site-wide outage.</p></details></div></div></section>
+  <section class="faq-section"><div class="container faq-grid"><div class="section-heading"><span class="eyebrow">Quick answers</span><h2>Before you run a check.</h2><p>Know what the tool can tell you and where a deeper investigation starts.</p></div><div class="faq-list"><details><summary>Can I check multiple URLs at once?</summary><p>Yes. Paste or import public HTTP or HTTPS URLs with no fixed list limit. Keep the tab open for long checks. The checker processes them in small batches and lets you export the report as CSV.</p></details><details><summary>Does a 200 status mean my page is indexed?</summary><p>No. A 200 means the server successfully answered the request. Indexing also depends on content, access, directives, canonicalization, and search engine decisions. Check Search Console for Google's view.</p></details><details><summary>Will this detect redirect loops and broken destinations?</summary><p>The checker follows up to six redirects, reports each hop, and flags loops, excessive chains, and final error responses.</p></details><details><summary>Why does a site show a 403 here but load in my browser?</summary><p>Some sites treat automated server requests differently from browser traffic. Verify the URL in a browser and inspect server or security logs before treating a 403 as a site-wide outage.</p></details></div></div></section>
 
   <section class="bottom-cta"><div class="container"><div><span class="eyebrow">Ready when you are</span><h2>Find the weak links in your URL list.</h2><p>Run a free check and get an exportable report in minutes.</p></div><a class="button" href="#checker">Check your URLs →</a></div></section>
 </Base>
@@ -71,23 +72,40 @@ import Base from '../layouts/Base.astro';
   const errorBox = document.querySelector<HTMLElement>('#error-message')!;
   const resultsSection = document.querySelector<HTMLElement>('#results')!;
   const resultsBody = document.querySelector<HTMLElement>('#results-body')!;
+  const pagination = document.querySelector<HTMLElement>('#result-pagination')!;
+  const previousPage = document.querySelector<HTMLButtonElement>('#previous-page')!;
+  const nextPage = document.querySelector<HTMLButtonElement>('#next-page')!;
+  const pageLabel = document.querySelector<HTMLElement>('#page-label')!;
+  const batchSize = 5;
+  const batchIntervalMs = 5_500;
+  const pageSize = 100;
   let results: Result[] = [];
+  let buckets: Record<string, Result[]> = { issues: [], unverified: [], redirects: [], healthy: [] };
+  let hasBlockedResult = false;
   const expected = new Map<string,string>();
   let controller: AbortController | null = null;
   let activeFilter = 'all';
+  let page = 0;
   function lines() { return [...new Set(textarea.value.split(/\r?\n/).map(v => v.trim()).filter(Boolean))]; }
-  function updateCount() { const n = lines().length; count.textContent = `${n} / 50`; count.classList.toggle('over-limit', n > 50); }
+  function updateCount() { const n = lines().length; count.textContent = `${n.toLocaleString()} URL${n === 1 ? '' : 's'}`; }
   function error(message: string) { errorBox.textContent = message; errorBox.hidden = !message; }
   function normalize(value: string) { return /^[a-z][a-z\d+.-]*:\/\//i.test(value) ? value : `https://${value}`; }
   function cell(row: HTMLTableRowElement, value: string, className = '') { const td = row.insertCell(); td.textContent = value; if (className) td.className = className; return td; }
   function category(result: Result) { return result.errorType && result.errorType !== 'redirect' ? 'unverified' : (result.status ?? 0) >= 400 || result.issues.length ? 'issues' : result.hops.length > 1 ? 'redirects' : 'healthy'; }
+  function addResult(result: Result) { results.push(result); buckets[category(result)].push(result); if (result.errorType === 'blocked') hasBlockedResult = true; }
   function render() {
     resultsBody.replaceChildren();
-    const counts = { all: results.length, issues: results.filter(r => category(r) === 'issues').length, unverified: results.filter(r => category(r) === 'unverified').length, redirects: results.filter(r => category(r) === 'redirects').length, healthy: results.filter(r => category(r) === 'healthy').length };
+    const counts = { all: results.length, issues: buckets.issues.length, unverified: buckets.unverified.length, redirects: buckets.redirects.length, healthy: buckets.healthy.length };
     for (const [key, value] of Object.entries(counts)) document.querySelector(`#count-${key}`)!.textContent = String(value);
     document.querySelector('#results-summary')!.textContent = `${counts.all} attempted · ${counts.issues} need attention · ${counts.unverified} could not verify · ${counts.redirects} redirected`;
-    document.querySelector<HTMLElement>('#network-notice')!.hidden = !results.some(r => r.errorType === 'blocked');
-    for (const result of results.filter(r => activeFilter === 'all' || category(r) === activeFilter)) {
+    document.querySelector<HTMLElement>('#network-notice')!.hidden = !hasBlockedResult;
+    const matching = activeFilter === 'all' ? results : buckets[activeFilter] ?? [];
+    page = Math.min(page, Math.max(0, Math.ceil(matching.length / pageSize) - 1));
+    pagination.hidden = matching.length <= pageSize;
+    previousPage.disabled = page === 0;
+    nextPage.disabled = (page + 1) * pageSize >= matching.length;
+    pageLabel.textContent = matching.length ? `${(page * pageSize + 1).toLocaleString()}–${Math.min((page + 1) * pageSize, matching.length).toLocaleString()} of ${matching.length.toLocaleString()}` : '0 results';
+    for (const result of matching.slice(page * pageSize, (page + 1) * pageSize)) {
       const row = document.createElement('tr');
       const urlCell = row.insertCell();
       const details = document.createElement('details');
@@ -110,45 +128,68 @@ import Base from '../layouts/Base.astro';
       resultsBody.append(row);
     }
   }
-  textarea.addEventListener('input', updateCount);
+  let countTimer: number | undefined;
+  textarea.addEventListener('input', () => { clearTimeout(countTimer); countTimer = window.setTimeout(updateCount, 200); });
   document.querySelector('#sample-button')!.addEventListener('click', () => { expected.clear(); textarea.value = 'https://example.com\nhttp://example.com\nhttps://www.wikipedia.org/'; updateCount(); textarea.focus(); });
   function csvFields(line:string) { const fields:string[]=[]; let value=''; let quoted=false; for(let i=0;i<line.length;i++){const char=line[i];if(char==='"'){if(quoted&&line[i+1]==='"'){value+='"';i++;}else quoted=!quoted;}else if(char===','&&!quoted){fields.push(value.trim());value='';}else value+=char;}fields.push(value.trim());return fields; }
   document.querySelector<HTMLInputElement>('#file-input')!.addEventListener('change', async event => {
     const file = (event.target as HTMLInputElement).files?.[0]; if (!file) return;
-    if (file.size > 100_000) return error('Choose a file smaller than 100 KB.');
+    if (file.size > 10_000_000) return error('Choose a file smaller than 10 MB to keep this browser tab responsive.');
     expected.clear(); const text = (await file.text()).replace(/^\ufeff/,''); const found:string[]=[];
     for(const line of text.split(/\r?\n/)){const [source,target]=file.name.toLowerCase().endsWith('.csv')?csvFields(line):[line.trim()];if(!source||! /^(https?:\/\/|[\w.-]+\.[a-z]{2,})/i.test(source))continue;const normalized=normalize(source);found.push(normalized);if(target){try{const url=new URL(normalize(target));if(['http:','https:'].includes(url.protocol))expected.set(normalized,url.href);}catch{/* Skip invalid expected destination. */}}}
     textarea.value = [...new Set(found)].join('\n'); updateCount(); error(''); (event.target as HTMLInputElement).value='';
   });
+  function waitFor(ms: number, signal: AbortSignal): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (signal.aborted) return reject(new DOMException('Check stopped', 'AbortError'));
+      const timer = window.setTimeout(() => { signal.removeEventListener('abort', onAbort); resolve(); }, ms);
+      function onAbort() { clearTimeout(timer); reject(new DOMException('Check stopped', 'AbortError')); }
+      signal.addEventListener('abort', onAbort, { once: true });
+    });
+  }
   cancel.addEventListener('click', () => controller?.abort());
   button.addEventListener('click', async () => {
     const urls = lines().map(normalize);
     if (!urls.length) return error('Add at least one URL to check.');
-    if (urls.length > 50) return error('This check supports up to 50 unique URLs.');
     const invalid = urls.find(value => { try { const u = new URL(value); return !['http:', 'https:'].includes(u.protocol) || !u.hostname.includes('.'); } catch { return true; } });
     if (invalid) return error(`Please check this URL: ${invalid}`);
-    error(''); results = []; controller = new AbortController(); button.disabled = true; cancel.hidden = false; resultsSection.hidden = false; progress.textContent = `Processing 0 of ${urls.length}…`; render();
+    error(''); results = []; buckets = { issues: [], unverified: [], redirects: [], healthy: [] }; hasBlockedResult = false; page = 0; controller = new AbortController(); button.disabled = true; cancel.hidden = false; resultsSection.hidden = false; progress.textContent = `Processing 0 of ${urls.length.toLocaleString()}…`; render();
     try {
-      for (let i = 0; i < urls.length; i += 5) {
-        const response = await fetch('/api/check/', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ urls: urls.slice(i, i + 5) }), signal: controller.signal });
+      let lastBatchStartedAt = 0;
+      for (let i = 0; i < urls.length; i += batchSize) {
+        if (i > 0) await waitFor(Math.max(0, batchIntervalMs - (Date.now() - lastBatchStartedAt)), controller.signal);
+        let response: Response;
+        let retries = 0;
+        while (true) {
+          lastBatchStartedAt = Date.now();
+          response = await fetch('/api/check/', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ urls: urls.slice(i, i + batchSize) }), signal: controller.signal });
+          if (response.status !== 429 || !response.headers.get('content-type')?.includes('application/json') || retries++ >= 3) break;
+          const retryAfter = response.headers.get('Retry-After');
+          const seconds = Number(retryAfter);
+          const delay = retryAfter !== null && Number.isFinite(seconds) ? Math.max(1_000, Math.min(seconds * 1000, 300_000)) : 60_000;
+          progress.textContent = `Rate limit reached. Retrying in ${Math.ceil(delay / 1000)} seconds…`;
+          await waitFor(delay, controller.signal);
+        }
         const contentType = response.headers.get('content-type') || '';
         if (!contentType.toLowerCase().includes('application/json')) {
           throw new Error(`Checker API unavailable (HTTP ${response.status}). The live site returned a web page instead of JSON. Check that the Worker API is deployed at /api/check/.`);
         }
         let data: { error?: string; results?: Result[] };
         try { data = await response.json(); }
-        catch { throw new Error('Checker API returned invalid JSON. Check the Cloudflare Pages deployment logs.'); }
+        catch { throw new Error('Checker API returned invalid JSON. Check the Cloudflare Worker deployment logs.'); }
         if (!response.ok) throw new Error(data.error || `The checker API returned HTTP ${response.status}.`);
-        if (!Array.isArray(data.results)) throw new Error('Checker API response is missing results. Check the Cloudflare Pages deployment.');
-        for(const item of data.results){const target=expected.get(item.input);if(target){item.expectedUrl=target;if(item.finalUrl&&!item.error&&item.finalUrl!==target)item.issues.push('Unexpected destination');}results.push(item);} progress.textContent = `Processed ${results.length} of ${urls.length}`; render();
+        if (!Array.isArray(data.results)) throw new Error('Checker API response is missing results. Check the Cloudflare Worker deployment.');
+        for(const item of data.results){const target=expected.get(item.input);if(target){item.expectedUrl=target;if(item.finalUrl&&!item.error&&item.finalUrl!==target)item.issues.push('Unexpected destination');}addResult(item);} progress.textContent = `Processed ${results.length} of ${urls.length}`; render();
       }
       progress.textContent = `Done — ${results.length} URL${results.length === 1 ? '' : 's'} processed.`;
     } catch (cause) {
       if (controller.signal.aborted) progress.textContent = `Stopped after ${results.length} URLs.`;
-      else error(cause instanceof Error ? cause.message : 'The check could not be completed.');
+      else { progress.textContent = `Stopped after ${results.length} of ${urls.length} URLs.`; error(cause instanceof Error ? cause.message : 'The check could not be completed.'); }
     } finally { controller = null; button.disabled = false; cancel.hidden = true; }
   });
-  document.querySelectorAll<HTMLButtonElement>('.filter').forEach(filter => filter.addEventListener('click', () => { activeFilter = filter.dataset.filter || 'all'; document.querySelectorAll('.filter').forEach(node => node.classList.toggle('active', node === filter)); render(); }));
+  previousPage.addEventListener('click', () => { page = Math.max(0, page - 1); render(); });
+  nextPage.addEventListener('click', () => { page += 1; render(); });
+  document.querySelectorAll<HTMLButtonElement>('.filter').forEach(filter => filter.addEventListener('click', () => { activeFilter = filter.dataset.filter || 'all'; page = 0; document.querySelectorAll('.filter').forEach(node => node.classList.toggle('active', node === filter)); render(); }));
   document.querySelector('#export-button')!.addEventListener('click', () => {
     const columns = ['Input URL','Expected destination','Final URL','Status','Status text','Time (ms)','Redirect hops','Redirect path','Title','Canonical','Robots','Content type','Issues','Error'];
     const rows = results.map(r => [r.input,r.expectedUrl,r.finalUrl,r.status,r.statusText,r.ms,Math.max(0,r.hops.length-1),r.hops.map(h=>`${h.status} ${h.url}`).join(' → '),r.title,r.canonical,r.robots,r.contentType,r.issues.join('; '),r.error]);

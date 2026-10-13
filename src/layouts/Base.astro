@@ -1,7 +1,7 @@
 ---
 import '../styles/global.css';
 import '../styles/results.css';
-const { title = 'Bulk HTTP Status Checker', description = 'Check HTTP status codes, redirects, response times, and SEO signals for up to 50 URLs.', type = 'website', published } = Astro.props;
+const { title = 'Bulk HTTP Status Checker', description = 'Check HTTP status codes, redirects, response times, and SEO signals for large URL lists.', type = 'website', published } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
 const fullTitle = title === 'Bulk HTTP Status Checker' ? 'StatusGrid — Bulk HTTP Status Checker' : `${title} | StatusGrid`;
 ---
