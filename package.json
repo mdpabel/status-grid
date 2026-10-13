@@ -4,10 +4,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "npm run build && npx wrangler pages dev dist",
+    "dev": "npm run build && npx wrangler dev",
     "dev:content": "astro dev",
-    "build": "astro build",
-    "preview": "npx wrangler pages dev dist",
+    "build": "astro build && node scripts/build-worker.mjs",
+    "preview": "npx wrangler dev",
+    "deploy": "npm run build && npx wrangler deploy",
     "check": "astro check",
     "test:function": "node scripts/check-pages-function.mjs"
   },
@@ -17,6 +18,7 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.5",
     "@types/node": "22.10.5",
+    "esbuild": "0.27.7",
     "typescript": "^5.9.3"
   }
 }

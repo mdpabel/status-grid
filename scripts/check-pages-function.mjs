@@ -2,10 +2,10 @@ import assert from 'node:assert/strict';
 import { fileURLToPath } from 'node:url';
 import { build } from 'esbuild';
 
-const entry = fileURLToPath(new URL('../functions/api/check.ts', import.meta.url));
+const entry = fileURLToPath(new URL('../src/worker.ts', import.meta.url));
 const bundled = await build({ entryPoints: [entry], bundle: true, format: 'esm', platform: 'neutral', write: false });
 const source = bundled.outputFiles[0].text;
-const { onRequestPost } = await import(`data:text/javascript;base64,${Buffer.from(source).toString('base64')}`);
+const { default: worker } = await import(`data:text/javascript;base64,${Buffer.from(source).toString('base64')}`);
 
 const calls = [];
 const originalFetch = globalThis.fetch;
@@ -25,7 +25,8 @@ try {
     headers: { 'content-type': 'application/json', 'CF-Connecting-IP': '192.0.2.1' },
     body: JSON.stringify({ urls: ['https://example.com/old', 'http://127.0.0.1/'] })
   });
-  const response = await onRequestPost({ request });
+  const env = { ASSETS: { fetch: async () => new Response('static page') } };
+  const response = await worker.fetch(request, env);
   assert.equal(response.status, 200);
   const { results } = await response.json();
   assert.equal(results[0].status, 200);
@@ -36,7 +37,11 @@ try {
   assert.equal(results[1].errorType, 'input');
   assert.deepEqual(calls.map(call => call.url), ['https://example.com/old', 'https://example.com/new']);
   assert.ok(calls.every(call => call.redirect === 'manual'));
-  process.stdout.write('Pages Function smoke check passed.\n');
+  const methodResponse = await worker.fetch(new Request('https://statusgrid.pages.dev/api/check/'), env);
+  assert.equal(methodResponse.status, 405);
+  const assetResponse = await worker.fetch(new Request('https://statusgrid.pages.dev/'), env);
+  assert.equal(await assetResponse.text(), 'static page');
+  process.stdout.write('Cloudflare Worker smoke check passed.\n');
 } finally {
   globalThis.fetch = originalFetch;
 }

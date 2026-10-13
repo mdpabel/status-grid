@@ -131,9 +131,16 @@ import Base from '../layouts/Base.astro';
     try {
       for (let i = 0; i < urls.length; i += 5) {
         const response = await fetch('/api/check/', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ urls: urls.slice(i, i + 5) }), signal: controller.signal });
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.error || 'The check could not be completed.');
-        for(const item of data.results as Result[]){const target=expected.get(item.input);if(target){item.expectedUrl=target;if(item.finalUrl&&!item.error&&item.finalUrl!==target)item.issues.push('Unexpected destination');}results.push(item);} progress.textContent = `Processed ${results.length} of ${urls.length}`; render();
+        const contentType = response.headers.get('content-type') || '';
+        if (!contentType.toLowerCase().includes('application/json')) {
+          throw new Error(`Checker API unavailable (HTTP ${response.status}). The live site returned a web page instead of JSON. Check that the Worker API is deployed at /api/check/.`);
+        }
+        let data: { error?: string; results?: Result[] };
+        try { data = await response.json(); }
+        catch { throw new Error('Checker API returned invalid JSON. Check the Cloudflare Pages deployment logs.'); }
+        if (!response.ok) throw new Error(data.error || `The checker API returned HTTP ${response.status}.`);
+        if (!Array.isArray(data.results)) throw new Error('Checker API response is missing results. Check the Cloudflare Pages deployment.');
+        for(const item of data.results){const target=expected.get(item.input);if(target){item.expectedUrl=target;if(item.finalUrl&&!item.error&&item.finalUrl!==target)item.issues.push('Unexpected destination');}results.push(item);} progress.textContent = `Processed ${results.length} of ${urls.length}`; render();
       }
       progress.textContent = `Done — ${results.length} URL${results.length === 1 ? '' : 's'} processed.`;
     } catch (cause) {

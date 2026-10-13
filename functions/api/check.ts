@@ -1,6 +1,6 @@
 import { checkUrl } from '../lib/checker';
 
-// This is a Cloudflare Pages Function. The static Astro build serves the pages.
+// Shared API handler, bundled into the Cloudflare Worker entry point.
 type Context = { request: Request };
 const limits = new Map<string, { count: number; reset: number }>();
 
