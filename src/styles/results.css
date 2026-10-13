@@ -24,6 +24,11 @@
 .status-filter label{font-weight:700}
 .status-filter select{min-width:180px;border:1px solid #cfdcd3;border-radius:7px;background:#fff;color:#203b34;padding:9px 30px 9px 11px;font:inherit}
 #download-scope{margin-left:auto;color:#71837b}
+.export-fields{margin:0 0 18px;padding:12px 14px 14px;border:1px solid #dce5dc;border-radius:9px;background:#fff}
+.export-fields legend{padding:0 6px;color:#53695d;font-size:12px;font-weight:700}
+.export-field-options{display:flex;flex-wrap:wrap;gap:10px 18px}
+.export-field-options label{display:inline-flex;align-items:center;gap:7px;color:#53695d;font-size:12px;cursor:pointer}
+.export-field-options input{accent-color:#2e6954}
 .result-pagination{display:flex;align-items:center;justify-content:flex-end;gap:18px;margin-top:16px;color:#53695d;font-size:13px}
 .result-pagination[hidden]{display:none}
 .result-pagination button:disabled{opacity:.4;cursor:default;text-decoration:none}

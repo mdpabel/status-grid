@@ -40,6 +40,21 @@ import Base from '../layouts/Base.astro';
         <div id="network-notice" class="network-notice" hidden><strong>The checker server cannot reach external websites.</strong> These results say nothing about whether the sites are online. Run StatusGrid on a server with outbound HTTP and HTTPS access.</div>
         <div class="filter-row" role="group" aria-label="Filter results"><button class="filter active" data-filter="all" type="button">All <span id="count-all">0</span></button><button class="filter" data-filter="issues" type="button">Needs attention <span id="count-issues">0</span></button><button class="filter" data-filter="unverified" type="button">Could not verify <span id="count-unverified">0</span></button><button class="filter" data-filter="redirects" type="button">Redirected <span id="count-redirects">0</span></button><button class="filter" data-filter="healthy" type="button">Healthy <span id="count-healthy">0</span></button></div>
         <div class="status-filter"><label for="status-filter">Any response status</label><select id="status-filter"><option value="all">All HTTP statuses</option></select><span id="download-scope" aria-live="polite"></span></div>
+        <fieldset class="export-fields"><legend>Include in downloads</legend><div class="export-field-options">
+          <label><input type="checkbox" value="input" checked /> Input URL</label>
+          <label><input type="checkbox" value="expected" checked /> Expected destination</label>
+          <label><input type="checkbox" value="final" checked /> Final URL</label>
+          <label><input type="checkbox" value="status" checked /> Final status</label>
+          <label><input type="checkbox" value="codes" checked /> Response codes</label>
+          <label><input type="checkbox" value="time" checked /> Time and hops</label>
+          <label><input type="checkbox" value="path" checked /> Redirect path</label>
+          <label><input type="checkbox" value="title" checked /> Page title</label>
+          <label><input type="checkbox" value="canonical" checked /> Canonical URL</label>
+          <label><input type="checkbox" value="robots" checked /> Robots directives</label>
+          <label><input type="checkbox" value="contentType" checked /> Content type</label>
+          <label><input type="checkbox" value="issues" checked /> Signals</label>
+          <label><input type="checkbox" value="error" checked /> Error details</label>
+        </div></fieldset>
         <div class="table-wrap"><table><thead><tr><th>URL / redirect path</th><th>Final status</th><th>Time</th><th>Hops</th><th>Signals</th></tr></thead><tbody id="results-body"></tbody></table></div>
         <div class="result-pagination" id="result-pagination" hidden><button class="text-button" id="previous-page" type="button">Previous</button><span id="page-label" aria-live="polite"></span><button class="text-button" id="next-page" type="button">Next</button></div>
         <p class="results-note">Downloads include the rows matching both active filters. Clear the filters to download all results. A missing response, 403, or 429 may be specific to this server-side check; compare the URL in a browser before treating it as a site-wide outage.</p>
@@ -81,6 +96,7 @@ import Base from '../layouts/Base.astro';
   const downloadScope = document.querySelector<HTMLElement>('#download-scope')!;
   const downloadCsvButton = document.querySelector<HTMLButtonElement>('#download-csv')!;
   const downloadTxtButton = document.querySelector<HTMLButtonElement>('#download-txt')!;
+  const exportFieldInputs = [...document.querySelectorAll<HTMLInputElement>('.export-field-options input')];
   const batchSize = 5;
   const batchIntervalMs = 5_500;
   const pageSize = 100;
@@ -114,6 +130,7 @@ import Base from '../layouts/Base.astro';
     const code = Number(selectedStatus);
     return categoryResults.filter(result => result.status === code || result.hops.some(hop => hop.status === code));
   }
+  function selectedExportFields() { return new Set(exportFieldInputs.filter(input => input.checked).map(input => input.value)); }
   function updateStatusOptions() {
     const selectedStatus = statusFilter.value;
     const options = [new Option('All HTTP statuses', 'all')];
@@ -136,8 +153,9 @@ import Base from '../layouts/Base.astro';
     nextPage.disabled = (page + 1) * pageSize >= matching.length;
     pageLabel.textContent = matching.length ? `${(page * pageSize + 1).toLocaleString()}–${Math.min((page + 1) * pageSize, matching.length).toLocaleString()} of ${matching.length.toLocaleString()}` : '0 results';
     downloadScope.textContent = `${matching.length.toLocaleString()} matching`;
-    downloadCsvButton.disabled = matching.length === 0;
-    downloadTxtButton.disabled = matching.length === 0;
+    const hasExportFields = selectedExportFields().size > 0;
+    downloadCsvButton.disabled = matching.length === 0 || !hasExportFields;
+    downloadTxtButton.disabled = matching.length === 0 || !hasExportFields;
     for (const result of matching.slice(page * pageSize, (page + 1) * pageSize)) {
       const row = document.createElement('tr');
       const urlCell = row.insertCell();
@@ -224,6 +242,7 @@ import Base from '../layouts/Base.astro';
   nextPage.addEventListener('click', () => { page += 1; render(); });
   document.querySelectorAll<HTMLButtonElement>('.filter').forEach(filter => filter.addEventListener('click', () => { activeFilter = filter.dataset.filter || 'all'; page = 0; document.querySelectorAll('.filter').forEach(node => node.classList.toggle('active', node === filter)); render(); }));
   statusFilter.addEventListener('change', () => { page = 0; render(); });
+  exportFieldInputs.forEach(input => input.addEventListener('change', render));
   function saveFile(content: string, mime: string, extension: string) {
     const url = URL.createObjectURL(new Blob([content], { type: mime }));
     const link = document.createElement('a');
@@ -236,24 +255,36 @@ import Base from '../layouts/Base.astro';
   downloadCsvButton.addEventListener('click', () => {
     const matching = filteredResults();
     if (!matching.length) return;
-    const columns = ['Input URL','Expected destination','Final URL','Status','Status text','Response codes','Time (ms)','Redirect hops','Redirect path','Title','Canonical','Robots','Content type','Issues','Error'];
-    const rows = matching.map(r => [r.input,r.expectedUrl,r.finalUrl,r.status,r.statusText,r.hops.map(h=>h.status).join(' → '),r.ms,Math.max(0,r.hops.length-1),r.hops.map(h=>`${h.status} ${h.url}`).join(' → '),r.title,r.canonical,r.robots,r.contentType,r.issues.join('; '),r.error]);
+    const fields = selectedExportFields();
+    const allColumns: [string, (r: Result) => unknown][] = [
+      ['Input URL', r => r.input], ['Expected destination', r => r.expectedUrl], ['Final URL', r => r.finalUrl],
+      ['Final status', r => r.status === null ? 'No response' : `${r.status} ${r.statusText}`],
+      ['Response codes', r => r.hops.map(h => h.status).join(' → ')], ['Time (ms)', r => r.ms],
+      ['Redirect hops', r => Math.max(0, r.hops.length - 1)], ['Redirect path', r => r.hops.map(h => `${h.status} ${h.url}`).join(' → ')],
+      ['Page title', r => r.title], ['Canonical URL', r => r.canonical], ['Robots directives', r => r.robots],
+      ['Content type', r => r.contentType], ['Signals', r => r.issues.join('; ')], ['Error details', r => r.error]
+    ];
+    const fieldKeys = ['input','expected','final','status','codes','time','time','path','title','canonical','robots','contentType','issues','error'];
+    const columns = allColumns.filter((_, index) => fields.has(fieldKeys[index]));
+    const rows = matching.map(r => columns.map(([, value]) => value(r)));
     saveFile(`\ufeff${[columns,...rows].map(row => row.map(csvCell).join(',')).join('\r\n')}`, 'text/csv;charset=utf-8', 'csv');
   });
   downloadTxtButton.addEventListener('click', () => {
     const matching = filteredResults();
     if (!matching.length) return;
-    const report = [`StatusGrid URL check`, `Filter: ${activeFilter}; HTTP status: ${statusFilter.value}`, `URLs: ${matching.length}`, `Generated: ${new Date().toISOString()}`, '', ...matching.flatMap(result => [
-      `URL: ${result.input}`,
-      `Status: ${result.status === null ? 'No response' : `${result.status} ${result.statusText}`}`,
-      `Final URL: ${result.finalUrl ?? 'Not available'}`,
-      `Response codes: ${result.hops.map(hop => hop.status).join(' → ') || 'None'}`,
-      `Time: ${result.ms} ms; redirect hops: ${Math.max(0, result.hops.length - 1)}`,
-      ...(result.hops.length ? [`Response path: ${result.hops.map(hop => `${hop.status} ${hop.url}${hop.location ? ` → ${hop.location}` : ''}`).join(' | ')}`] : []),
-      ...(result.issues.length ? [`Signals: ${result.issues.join('; ')}`] : []),
-      ...(result.error ? [`Note: ${result.error}`] : []),
-      ''
-    ])];
+    const fields = selectedExportFields();
+    const reportLabels: Record<string, string> = { input:'Input URL', expected:'Expected destination', final:'Final URL', status:'Final status', codes:'Response codes', time:'Time and redirect hops', path:'Redirect path', title:'Page title', canonical:'Canonical URL', robots:'Robots directives', contentType:'Content type', issues:'Signals', error:'Error details' };
+    const reportValues: Record<string, (r: Result) => string> = {
+      input: r => r.input, expected: r => r.expectedUrl || 'Not provided', final: r => r.finalUrl || 'Not available',
+      status: r => r.status === null ? 'No response' : `${r.status} ${r.statusText}`,
+      codes: r => r.hops.map(h => h.status).join(' → ') || 'None',
+      time: r => `${r.ms} ms; ${Math.max(0, r.hops.length - 1)} redirect hops`,
+      path: r => r.hops.map(h => `${h.status} ${h.url}${h.location ? ` → ${h.location}` : ''}`).join(' | ') || 'None',
+      title: r => r.title || 'Not found', canonical: r => r.canonical || 'Not found', robots: r => r.robots || 'Not found',
+      contentType: r => r.contentType || 'Not available', issues: r => r.issues.join('; ') || 'None', error: r => r.error || 'None'
+    };
+    const included = [...fields].filter(field => reportValues[field]);
+    const report = [`StatusGrid URL check`, `Filter: ${activeFilter}; HTTP status: ${statusFilter.value}`, `URLs: ${matching.length}`, `Generated: ${new Date().toISOString()}`, '', ...matching.flatMap(result => [...included.map(field => `${reportLabels[field]}: ${reportValues[field](result)}`), ''])];
     saveFile(report.join('\r\n'), 'text/plain;charset=utf-8', 'txt');
   });
 </script>
