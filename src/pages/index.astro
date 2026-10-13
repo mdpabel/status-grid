@@ -36,12 +36,13 @@ import Base from '../layouts/Base.astro';
         </div>
       </div>
       <div class="results" id="results" hidden>
-        <div class="results-top"><div><span class="eyebrow">02 / Review the signals</span><h3>Your results</h3><p id="results-summary"></p></div><button class="button secondary" id="export-button" type="button">↓ Export CSV</button></div>
+        <div class="results-top"><div><span class="eyebrow">02 / Review the signals</span><h3>Your results</h3><p id="results-summary"></p></div><div class="download-actions"><button class="button secondary" id="download-csv" type="button">↓ Download CSV</button><button class="button secondary" id="download-txt" type="button">↓ Download TXT</button></div></div>
         <div id="network-notice" class="network-notice" hidden><strong>The checker server cannot reach external websites.</strong> These results say nothing about whether the sites are online. Run StatusGrid on a server with outbound HTTP and HTTPS access.</div>
         <div class="filter-row" role="group" aria-label="Filter results"><button class="filter active" data-filter="all" type="button">All <span id="count-all">0</span></button><button class="filter" data-filter="issues" type="button">Needs attention <span id="count-issues">0</span></button><button class="filter" data-filter="unverified" type="button">Could not verify <span id="count-unverified">0</span></button><button class="filter" data-filter="redirects" type="button">Redirected <span id="count-redirects">0</span></button><button class="filter" data-filter="healthy" type="button">Healthy <span id="count-healthy">0</span></button></div>
+        <div class="status-filter"><label for="status-filter">Any response status</label><select id="status-filter"><option value="all">All HTTP statuses</option></select><span id="download-scope" aria-live="polite"></span></div>
         <div class="table-wrap"><table><thead><tr><th>URL / redirect path</th><th>Final status</th><th>Time</th><th>Hops</th><th>Signals</th></tr></thead><tbody id="results-body"></tbody></table></div>
         <div class="result-pagination" id="result-pagination" hidden><button class="text-button" id="previous-page" type="button">Previous</button><span id="page-label" aria-live="polite"></span><button class="text-button" id="next-page" type="button">Next</button></div>
-        <p class="results-note">A missing response, 403, or 429 may be specific to this server-side check. Compare the URL in a browser before treating it as a site-wide outage.</p>
+        <p class="results-note">Downloads include the rows matching both active filters. Clear the filters to download all results. A missing response, 403, or 429 may be specific to this server-side check; compare the URL in a browser before treating it as a site-wide outage.</p>
       </div>
     </div>
   </section>
@@ -57,7 +58,7 @@ import Base from '../layouts/Base.astro';
 
   <section class="learn-section"><div class="container"><div class="learn-head"><div class="section-heading"><span class="eyebrow">Learn the language of the web</span><h2>Know what the response means.</h2></div><a href="/blog/">View all guides <span aria-hidden="true">↗</span></a></div><div class="learn-grid"><a class="learn-card" href="/blog/http-status-codes-seo/"><span class="learn-tag">The essentials · 8 min read</span><h3>HTTP status codes and SEO: what actually matters</h3><p>A practical map of 2xx, 3xx, 4xx, and 5xx responses and what to investigate next.</p><span class="learn-arrow">Read guide ↗</span></a><a class="learn-card" href="/blog/301-vs-302-redirects/"><span class="learn-tag">Redirects · 6 min read</span><h3>301 vs 302 redirects: choosing the right move</h3><p>Learn when a move is permanent, when it is temporary, and why the destination matters.</p><span class="learn-arrow">Read guide ↗</span></a><a class="learn-card" href="/blog/404-vs-410-soft-404/"><span class="learn-tag">Errors · 7 min read</span><h3>404, 410, and soft 404: a cleanup playbook</h3><p>Choose the right response for removed pages and avoid “success” pages that are actually errors.</p><span class="learn-arrow">Read guide ↗</span></a></div></div></section>
 
-  <section class="faq-section"><div class="container faq-grid"><div class="section-heading"><span class="eyebrow">Quick answers</span><h2>Before you run a check.</h2><p>Know what the tool can tell you and where a deeper investigation starts.</p></div><div class="faq-list"><details><summary>Can I check multiple URLs at once?</summary><p>Yes. Paste or import public HTTP or HTTPS URLs with no fixed list limit. Keep the tab open for long checks. The checker processes them in small batches and lets you export the report as CSV.</p></details><details><summary>Does a 200 status mean my page is indexed?</summary><p>No. A 200 means the server successfully answered the request. Indexing also depends on content, access, directives, canonicalization, and search engine decisions. Check Search Console for Google's view.</p></details><details><summary>Will this detect redirect loops and broken destinations?</summary><p>The checker follows up to six redirects, reports each hop, and flags loops, excessive chains, and final error responses.</p></details><details><summary>Why does a site show a 403 here but load in my browser?</summary><p>Some sites treat automated server requests differently from browser traffic. Verify the URL in a browser and inspect server or security logs before treating a 403 as a site-wide outage.</p></details></div></div></section>
+  <section class="faq-section"><div class="container faq-grid"><div class="section-heading"><span class="eyebrow">Quick answers</span><h2>Before you run a check.</h2><p>Know what the tool can tell you and where a deeper investigation starts.</p></div><div class="faq-list"><details><summary>Can I check multiple URLs at once?</summary><p>Yes. Paste or import public HTTP or HTTPS URLs with no fixed list limit. Keep the tab open for long checks. The checker processes them in small batches and lets you export the report as CSV.</p></details><details><summary>Does a 200 status mean my page is indexed?</summary><p>No. A 200 means the server successfully answered the request. Indexing also depends on content, access, directives, canonicalization, and search engine decisions. Check Search Console for Google's view.</p></details><details><summary>Will this detect redirect loops and broken destinations?</summary><p>The checker follows up to six redirects, reports each hop, and flags loops, excessive chains, and final error responses.</p></details><details><summary>Can I filter and download only certain status codes?</summary><p>Yes. Filter by any status found in a response path, including 301, 404, or 410. TXT and CSV downloads include rows matching the active filters; clear filters to include all results.</p></details><details><summary>Why does a site show a 403 here but load in my browser?</summary><p>Some sites treat automated server requests differently from browser traffic. Verify the URL in a browser and inspect server or security logs before treating a 403 as a site-wide outage.</p></details></div></div></section>
 
   <section class="bottom-cta"><div class="container"><div><span class="eyebrow">Ready when you are</span><h2>Find the weak links in your URL list.</h2><p>Run a free check and get an exportable report in minutes.</p></div><a class="button" href="#checker">Check your URLs →</a></div></section>
 </Base>
@@ -76,12 +77,18 @@ import Base from '../layouts/Base.astro';
   const previousPage = document.querySelector<HTMLButtonElement>('#previous-page')!;
   const nextPage = document.querySelector<HTMLButtonElement>('#next-page')!;
   const pageLabel = document.querySelector<HTMLElement>('#page-label')!;
+  const statusFilter = document.querySelector<HTMLSelectElement>('#status-filter')!;
+  const downloadScope = document.querySelector<HTMLElement>('#download-scope')!;
+  const downloadCsvButton = document.querySelector<HTMLButtonElement>('#download-csv')!;
+  const downloadTxtButton = document.querySelector<HTMLButtonElement>('#download-txt')!;
   const batchSize = 5;
   const batchIntervalMs = 5_500;
   const pageSize = 100;
   let results: Result[] = [];
   let buckets: Record<string, Result[]> = { issues: [], unverified: [], redirects: [], healthy: [] };
   let hasBlockedResult = false;
+  const availableStatuses = new Set<number>();
+  let hasNoResponse = false;
   const expected = new Map<string,string>();
   let controller: AbortController | null = null;
   let activeFilter = 'all';
@@ -92,19 +99,45 @@ import Base from '../layouts/Base.astro';
   function normalize(value: string) { return /^[a-z][a-z\d+.-]*:\/\//i.test(value) ? value : `https://${value}`; }
   function cell(row: HTMLTableRowElement, value: string, className = '') { const td = row.insertCell(); td.textContent = value; if (className) td.className = className; return td; }
   function category(result: Result) { return result.errorType && result.errorType !== 'redirect' ? 'unverified' : (result.status ?? 0) >= 400 || result.issues.length ? 'issues' : result.hops.length > 1 ? 'redirects' : 'healthy'; }
-  function addResult(result: Result) { results.push(result); buckets[category(result)].push(result); if (result.errorType === 'blocked') hasBlockedResult = true; }
+  function addResult(result: Result) {
+    results.push(result); buckets[category(result)].push(result);
+    if (result.errorType === 'blocked') hasBlockedResult = true;
+    if (result.status === null) hasNoResponse = true;
+    else availableStatuses.add(result.status);
+    for (const hop of result.hops) availableStatuses.add(hop.status);
+  }
+  function filteredResults() {
+    const categoryResults = activeFilter === 'all' ? results : buckets[activeFilter] ?? [];
+    const selectedStatus = statusFilter.value;
+    if (selectedStatus === 'all') return categoryResults;
+    if (selectedStatus === 'none') return categoryResults.filter(result => result.status === null);
+    const code = Number(selectedStatus);
+    return categoryResults.filter(result => result.status === code || result.hops.some(hop => hop.status === code));
+  }
+  function updateStatusOptions() {
+    const selectedStatus = statusFilter.value;
+    const options = [new Option('All HTTP statuses', 'all')];
+    for (const code of [...availableStatuses].sort((a, b) => a - b)) options.push(new Option(String(code), String(code)));
+    if (hasNoResponse) options.push(new Option('No HTTP response', 'none'));
+    statusFilter.replaceChildren(...options);
+    statusFilter.value = options.some(option => option.value === selectedStatus) ? selectedStatus : 'all';
+  }
   function render() {
     resultsBody.replaceChildren();
+    updateStatusOptions();
     const counts = { all: results.length, issues: buckets.issues.length, unverified: buckets.unverified.length, redirects: buckets.redirects.length, healthy: buckets.healthy.length };
     for (const [key, value] of Object.entries(counts)) document.querySelector(`#count-${key}`)!.textContent = String(value);
     document.querySelector('#results-summary')!.textContent = `${counts.all} attempted · ${counts.issues} need attention · ${counts.unverified} could not verify · ${counts.redirects} redirected`;
     document.querySelector<HTMLElement>('#network-notice')!.hidden = !hasBlockedResult;
-    const matching = activeFilter === 'all' ? results : buckets[activeFilter] ?? [];
+    const matching = filteredResults();
     page = Math.min(page, Math.max(0, Math.ceil(matching.length / pageSize) - 1));
     pagination.hidden = matching.length <= pageSize;
     previousPage.disabled = page === 0;
     nextPage.disabled = (page + 1) * pageSize >= matching.length;
     pageLabel.textContent = matching.length ? `${(page * pageSize + 1).toLocaleString()}–${Math.min((page + 1) * pageSize, matching.length).toLocaleString()} of ${matching.length.toLocaleString()}` : '0 results';
+    downloadScope.textContent = `${matching.length.toLocaleString()} matching`;
+    downloadCsvButton.disabled = matching.length === 0;
+    downloadTxtButton.disabled = matching.length === 0;
     for (const result of matching.slice(page * pageSize, (page + 1) * pageSize)) {
       const row = document.createElement('tr');
       const urlCell = row.insertCell();
@@ -153,7 +186,7 @@ import Base from '../layouts/Base.astro';
     if (!urls.length) return error('Add at least one URL to check.');
     const invalid = urls.find(value => { try { const u = new URL(value); return !['http:', 'https:'].includes(u.protocol) || !u.hostname.includes('.'); } catch { return true; } });
     if (invalid) return error(`Please check this URL: ${invalid}`);
-    error(''); results = []; buckets = { issues: [], unverified: [], redirects: [], healthy: [] }; hasBlockedResult = false; page = 0; controller = new AbortController(); button.disabled = true; cancel.hidden = false; resultsSection.hidden = false; progress.textContent = `Processing 0 of ${urls.length.toLocaleString()}…`; render();
+    error(''); results = []; buckets = { issues: [], unverified: [], redirects: [], healthy: [] }; hasBlockedResult = false; availableStatuses.clear(); hasNoResponse = false; statusFilter.value = 'all'; page = 0; controller = new AbortController(); button.disabled = true; cancel.hidden = false; resultsSection.hidden = false; progress.textContent = `Processing 0 of ${urls.length.toLocaleString()}…`; render();
     try {
       let lastBatchStartedAt = 0;
       for (let i = 0; i < urls.length; i += batchSize) {
@@ -190,12 +223,38 @@ import Base from '../layouts/Base.astro';
   previousPage.addEventListener('click', () => { page = Math.max(0, page - 1); render(); });
   nextPage.addEventListener('click', () => { page += 1; render(); });
   document.querySelectorAll<HTMLButtonElement>('.filter').forEach(filter => filter.addEventListener('click', () => { activeFilter = filter.dataset.filter || 'all'; page = 0; document.querySelectorAll('.filter').forEach(node => node.classList.toggle('active', node === filter)); render(); }));
-  document.querySelector('#export-button')!.addEventListener('click', () => {
-    const columns = ['Input URL','Expected destination','Final URL','Status','Status text','Time (ms)','Redirect hops','Redirect path','Title','Canonical','Robots','Content type','Issues','Error'];
-    const rows = results.map(r => [r.input,r.expectedUrl,r.finalUrl,r.status,r.statusText,r.ms,Math.max(0,r.hops.length-1),r.hops.map(h=>`${h.status} ${h.url}`).join(' → '),r.title,r.canonical,r.robots,r.contentType,r.issues.join('; '),r.error]);
-    const csv = [columns,...rows].map(row => row.map(value => `"${String(value ?? '').replaceAll('"','""')}"`).join(',')).join('\r\n');
-    const url = URL.createObjectURL(new Blob(['\ufeff',csv], { type:'text/csv;charset=utf-8' }));
-    const link = document.createElement('a'); link.href = url; link.download = `statusgrid-${new Date().toISOString().slice(0,10)}.csv`; link.click(); setTimeout(()=>URL.revokeObjectURL(url),1000);
+  statusFilter.addEventListener('change', () => { page = 0; render(); });
+  function saveFile(content: string, mime: string, extension: string) {
+    const url = URL.createObjectURL(new Blob([content], { type: mime }));
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `statusgrid-${new Date().toISOString().slice(0,10)}-${activeFilter}-${statusFilter.value}.${extension}`;
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+  function csvCell(value: unknown) { return `"${String(value ?? '').replaceAll('"', '""')}"`; }
+  downloadCsvButton.addEventListener('click', () => {
+    const matching = filteredResults();
+    if (!matching.length) return;
+    const columns = ['Input URL','Expected destination','Final URL','Status','Status text','Response codes','Time (ms)','Redirect hops','Redirect path','Title','Canonical','Robots','Content type','Issues','Error'];
+    const rows = matching.map(r => [r.input,r.expectedUrl,r.finalUrl,r.status,r.statusText,r.hops.map(h=>h.status).join(' → '),r.ms,Math.max(0,r.hops.length-1),r.hops.map(h=>`${h.status} ${h.url}`).join(' → '),r.title,r.canonical,r.robots,r.contentType,r.issues.join('; '),r.error]);
+    saveFile(`\ufeff${[columns,...rows].map(row => row.map(csvCell).join(',')).join('\r\n')}`, 'text/csv;charset=utf-8', 'csv');
+  });
+  downloadTxtButton.addEventListener('click', () => {
+    const matching = filteredResults();
+    if (!matching.length) return;
+    const report = [`StatusGrid URL check`, `Filter: ${activeFilter}; HTTP status: ${statusFilter.value}`, `URLs: ${matching.length}`, `Generated: ${new Date().toISOString()}`, '', ...matching.flatMap(result => [
+      `URL: ${result.input}`,
+      `Status: ${result.status === null ? 'No response' : `${result.status} ${result.statusText}`}`,
+      `Final URL: ${result.finalUrl ?? 'Not available'}`,
+      `Response codes: ${result.hops.map(hop => hop.status).join(' → ') || 'None'}`,
+      `Time: ${result.ms} ms; redirect hops: ${Math.max(0, result.hops.length - 1)}`,
+      ...(result.hops.length ? [`Response path: ${result.hops.map(hop => `${hop.status} ${hop.url}${hop.location ? ` → ${hop.location}` : ''}`).join(' | ')}`] : []),
+      ...(result.issues.length ? [`Signals: ${result.issues.join('; ')}`] : []),
+      ...(result.error ? [`Note: ${result.error}`] : []),
+      ''
+    ])];
+    saveFile(report.join('\r\n'), 'text/plain;charset=utf-8', 'txt');
   });
 </script>
 
