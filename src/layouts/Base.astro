@@ -1,0 +1,43 @@
+---
+import '../styles/global.css';
+import '../styles/results.css';
+const { title = 'Bulk HTTP Status Checker', description = 'Check HTTP status codes, redirects, response times, and SEO signals for up to 50 URLs.', type = 'website', published } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const fullTitle = title === 'Bulk HTTP Status Checker' ? 'StatusGrid — Bulk HTTP Status Checker' : `${title} | StatusGrid`;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#101c28" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta property="og:type" content={type} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary" />
+    {published && <meta property="article:published_time" content={published} />}
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header">
+      <div class="container nav-wrap">
+        <a class="brand" href="/" aria-label="StatusGrid home"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M3 18h8l4-10 5 16 4-8h5" /></svg></span><span>Status<span class="brand-accent">Grid</span></span></a>
+        <nav aria-label="Main navigation"><a href="/#checker">The tool</a><a href="/status-codes/">Status codes</a><a href="/blog/">Guides</a><a class="nav-cta" href="/#checker">Check URLs <span aria-hidden="true">↗</span></a></nav>
+      </div>
+    </header>
+    <main id="main"><slot /></main>
+    <footer class="site-footer">
+      <div class="container footer-grid">
+        <div><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M3 18h8l4-10 5 16 4-8h5" /></svg></span><span>Status<span class="brand-accent">Grid</span></span></a><p>HTTP clarity for people who care where every URL leads.</p></div>
+        <div><strong>Explore</strong><a href="/#checker">Bulk checker</a><a href="/status-codes/">Status code reference</a><a href="/blog/">Field guides</a></div>
+        <div><strong>About this tool</strong><a href="/how-it-works/">How it works</a><a href="/privacy/">Privacy</a><a href="/about/">About</a></div>
+      </div>
+      <div class="container footer-bottom"><span>© {new Date().getFullYear()} StatusGrid</span><span>Made for practical technical SEO.</span></div>
+    </footer>
+  </body>
+</html>

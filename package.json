@@ -1,0 +1,22 @@
+{
+  "name": "statusgrid",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "npm run build && npx wrangler pages dev dist",
+    "dev:content": "astro dev",
+    "build": "astro build",
+    "preview": "npx wrangler pages dev dist",
+    "check": "astro check",
+    "test:function": "node scripts/check-pages-function.mjs"
+  },
+  "dependencies": {
+    "astro": "^5.16.15"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.5",
+    "@types/node": "22.10.5",
+    "typescript": "^5.9.3"
+  }
+}

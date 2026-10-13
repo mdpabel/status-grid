@@ -1,0 +1,159 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base description="Free bulk HTTP status checker for up to 50 URLs. Trace redirect chains, find errors, inspect canonical and noindex signals, and export a CSV report.">
+  <section class="hero">
+    <div class="container hero-grid">
+      <div class="hero-copy">
+        <div class="eyebrow">The URL audit workspace</div>
+        <h1>Every URL has a <em>story.</em><br />See the whole path.</h1>
+        <p>Check up to 50 URLs at once. Follow every redirect, spot broken destinations, and surface the HTTP and SEO signals that need your attention.</p>
+        <div class="hero-points"><span><i></i> No account needed</span><span><i></i> Full redirect paths</span><span><i></i> Exportable results</span></div>
+        <a class="hero-link" href="#checker">Start checking <span aria-hidden="true">↓</span></a>
+      </div>
+      <div class="hero-visual" aria-hidden="true">
+        <div class="visual-top"><span><i></i><i></i><i></i></span><b>LIVE URL TRACE</b><span>↗</span></div>
+        <div class="trace-line"><span class="trace-dot">01</span><div><small>REQUEST</small><strong>example.com/old-page</strong></div><b class="trace-code redirect">301</b></div>
+        <div class="trace-connector"></div>
+        <div class="trace-line"><span class="trace-dot">02</span><div><small>REDIRECT</small><strong>example.com/new-page</strong></div><b class="trace-code success">200</b></div>
+        <div class="visual-note"><span class="pulse"></span><div><strong>Destination reached</strong><small>2 hops · 184 ms · canonical found</small></div><span>✓</span></div>
+      </div>
+    </div>
+    <div class="hero-gridlines"></div>
+  </section>
+
+  <section class="tool-section" id="checker">
+    <div class="container">
+      <div class="tool-intro"><div><span class="eyebrow">01 / Run a check</span><h2>Turn a URL list into a clear action list.</h2></div><p>Paste one URL per line, or import a TXT or CSV file. We'll check the live HTTP response and follow redirects to the final page.</p></div>
+      <div class="tool-shell">
+        <div class="tool-bar"><span><span class="tool-icon">⌁</span> Bulk status checker</span><span class="tool-cap">UP TO 50 URLS</span></div>
+        <div class="tool-body">
+          <div class="input-head"><label for="urls">Your URLs</label><span id="url-count">0 / 50</span></div>
+          <textarea id="urls" spellcheck="false" placeholder="https://example.com/old-page&#10;https://example.com/product&#10;https://example.com/contact" aria-describedby="input-help"></textarea>
+          <div class="input-footer"><span id="input-help">One URL per line. A CSV may include expected destinations in column two.</span><div><button class="text-button" id="sample-button" type="button">Use sample</button><label class="text-button upload" for="file-input">↑ Import TXT / CSV</label><input id="file-input" type="file" accept=".txt,.csv,text/plain,text/csv" hidden /></div></div>
+          <div class="tool-actions"><button class="button check-button" id="check-button" type="button">Check URLs <span aria-hidden="true">→</span></button><button class="cancel-button" id="cancel-button" type="button" hidden>Stop check</button><span id="progress-text" role="status" aria-live="polite"></span></div>
+          <div id="error-message" class="error-message" role="alert" hidden></div>
+        </div>
+      </div>
+      <div class="results" id="results" hidden>
+        <div class="results-top"><div><span class="eyebrow">02 / Review the signals</span><h3>Your results</h3><p id="results-summary"></p></div><button class="button secondary" id="export-button" type="button">↓ Export CSV</button></div>
+        <div id="network-notice" class="network-notice" hidden><strong>The checker server cannot reach external websites.</strong> These results say nothing about whether the sites are online. Run StatusGrid on a server with outbound HTTP and HTTPS access.</div>
+        <div class="filter-row" role="group" aria-label="Filter results"><button class="filter active" data-filter="all" type="button">All <span id="count-all">0</span></button><button class="filter" data-filter="issues" type="button">Needs attention <span id="count-issues">0</span></button><button class="filter" data-filter="unverified" type="button">Could not verify <span id="count-unverified">0</span></button><button class="filter" data-filter="redirects" type="button">Redirected <span id="count-redirects">0</span></button><button class="filter" data-filter="healthy" type="button">Healthy <span id="count-healthy">0</span></button></div>
+        <div class="table-wrap"><table><thead><tr><th>URL / redirect path</th><th>Final status</th><th>Time</th><th>Hops</th><th>Signals</th></tr></thead><tbody id="results-body"></tbody></table></div>
+        <p class="results-note">A missing response means this checker could not verify the URL. It does not prove the website is offline.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="feature-section"><div class="container"><div class="section-heading"><span class="eyebrow">Built for the real audit</span><h2>More context. Less guessing.</h2><p>A status code is a starting point. StatusGrid adds the path and page signals you need to decide what to fix first.</p></div><div class="feature-grid">
+    <article class="feature-card"><div class="feature-icon">↗</div><h3>Every redirect hop</h3><p>See each response in the chain, its destination, and the time spent getting there. Spot loops and unnecessarily long paths.</p></article>
+    <article class="feature-card"><div class="feature-icon">◎</div><h3>Indexing signals</h3><p>Inspect canonical URLs and robots directives found in response headers and initial HTML. Flag noindex and mismatched canonicals.</p></article>
+    <article class="feature-card"><div class="feature-icon">▦</div><h3>Actionable triage</h3><p>Separate healthy URLs, redirects, and pages needing attention. Get clear issue labels instead of a wall of status numbers.</p></article>
+    <article class="feature-card"><div class="feature-icon">⇄</div><h3>Migration map checks</h3><p>Import source and expected destination columns. Flag redirects that land on the wrong URL, then export the findings.</p></article>
+  </div></div></section>
+
+  <section class="workflow-section"><div class="container workflow-grid"><div><span class="eyebrow">A faster way to verify</span><h2>From a messy list to a better next step.</h2><p>Built for migration spot checks, broken-link cleanup, content inventories, and routine technical SEO reviews.</p><a href="/how-it-works/">Learn how checks work <span aria-hidden="true">↗</span></a></div><div class="steps"><div><b>01</b><span><strong>Add URLs</strong><small>Paste or import up to 50 public URLs.</small></span></div><div><b>02</b><span><strong>Trace each response</strong><small>Follow redirects and read page signals.</small></span></div><div><b>03</b><span><strong>Prioritize and export</strong><small>Filter issues and take the report with you.</small></span></div></div></div></section>
+
+  <section class="learn-section"><div class="container"><div class="learn-head"><div class="section-heading"><span class="eyebrow">Learn the language of the web</span><h2>Know what the response means.</h2></div><a href="/blog/">View all guides <span aria-hidden="true">↗</span></a></div><div class="learn-grid"><a class="learn-card" href="/blog/http-status-codes-seo/"><span class="learn-tag">The essentials · 8 min read</span><h3>HTTP status codes and SEO: what actually matters</h3><p>A practical map of 2xx, 3xx, 4xx, and 5xx responses and what to investigate next.</p><span class="learn-arrow">Read guide ↗</span></a><a class="learn-card" href="/blog/301-vs-302-redirects/"><span class="learn-tag">Redirects · 6 min read</span><h3>301 vs 302 redirects: choosing the right move</h3><p>Learn when a move is permanent, when it is temporary, and why the destination matters.</p><span class="learn-arrow">Read guide ↗</span></a><a class="learn-card" href="/blog/404-vs-410-soft-404/"><span class="learn-tag">Errors · 7 min read</span><h3>404, 410, and soft 404: a cleanup playbook</h3><p>Choose the right response for removed pages and avoid “success” pages that are actually errors.</p><span class="learn-arrow">Read guide ↗</span></a></div></div></section>
+
+  <section class="faq-section"><div class="container faq-grid"><div class="section-heading"><span class="eyebrow">Quick answers</span><h2>Before you run a check.</h2><p>Know what the tool can tell you and where a deeper investigation starts.</p></div><div class="faq-list"><details><summary>Can I check multiple URLs at once?</summary><p>Yes. Paste or import up to 50 public HTTP or HTTPS URLs. The checker processes them in small batches and lets you export the report as CSV.</p></details><details><summary>Does a 200 status mean my page is indexed?</summary><p>No. A 200 means the server successfully answered the request. Indexing also depends on content, access, directives, canonicalization, and search engine decisions. Check Search Console for Google's view.</p></details><details><summary>Will this detect redirect loops and broken destinations?</summary><p>The checker follows up to six redirects, reports each hop, and flags loops, excessive chains, and final error responses.</p></details><details><summary>Why does a site show a 403 here but load in my browser?</summary><p>Some sites treat automated server requests differently from browser traffic. Verify the URL in a browser and inspect server or security logs before treating a 403 as a site-wide outage.</p></details></div></div></section>
+
+  <section class="bottom-cta"><div class="container"><div><span class="eyebrow">Ready when you are</span><h2>Find the weak links in your URL list.</h2><p>Run a free check and get an exportable report in minutes.</p></div><a class="button" href="#checker">Check your URLs →</a></div></section>
+</Base>
+
+<script>
+  type Result = { input:string; finalUrl:string|null; expectedUrl?:string; status:number|null; statusText:string; ms:number; hops:{url:string;status:number;location:string|null;ms:number}[]; contentType:string|null; canonical:string|null; robots:string|null; title:string|null; issues:string[]; error:string|null; errorType:'blocked'|'network'|'redirect'|'input'|null };
+  const textarea = document.querySelector<HTMLTextAreaElement>('#urls')!;
+  const count = document.querySelector<HTMLElement>('#url-count')!;
+  const button = document.querySelector<HTMLButtonElement>('#check-button')!;
+  const cancel = document.querySelector<HTMLButtonElement>('#cancel-button')!;
+  const progress = document.querySelector<HTMLElement>('#progress-text')!;
+  const errorBox = document.querySelector<HTMLElement>('#error-message')!;
+  const resultsSection = document.querySelector<HTMLElement>('#results')!;
+  const resultsBody = document.querySelector<HTMLElement>('#results-body')!;
+  let results: Result[] = [];
+  const expected = new Map<string,string>();
+  let controller: AbortController | null = null;
+  let activeFilter = 'all';
+  function lines() { return [...new Set(textarea.value.split(/\r?\n/).map(v => v.trim()).filter(Boolean))]; }
+  function updateCount() { const n = lines().length; count.textContent = `${n} / 50`; count.classList.toggle('over-limit', n > 50); }
+  function error(message: string) { errorBox.textContent = message; errorBox.hidden = !message; }
+  function normalize(value: string) { return /^[a-z][a-z\d+.-]*:\/\//i.test(value) ? value : `https://${value}`; }
+  function cell(row: HTMLTableRowElement, value: string, className = '') { const td = row.insertCell(); td.textContent = value; if (className) td.className = className; return td; }
+  function category(result: Result) { return result.errorType && result.errorType !== 'redirect' ? 'unverified' : (result.status ?? 0) >= 400 || result.issues.length ? 'issues' : result.hops.length > 1 ? 'redirects' : 'healthy'; }
+  function render() {
+    resultsBody.replaceChildren();
+    const counts = { all: results.length, issues: results.filter(r => category(r) === 'issues').length, unverified: results.filter(r => category(r) === 'unverified').length, redirects: results.filter(r => category(r) === 'redirects').length, healthy: results.filter(r => category(r) === 'healthy').length };
+    for (const [key, value] of Object.entries(counts)) document.querySelector(`#count-${key}`)!.textContent = String(value);
+    document.querySelector('#results-summary')!.textContent = `${counts.all} attempted · ${counts.issues} need attention · ${counts.unverified} could not verify · ${counts.redirects} redirected`;
+    document.querySelector<HTMLElement>('#network-notice')!.hidden = !results.some(r => r.errorType === 'blocked');
+    for (const result of results.filter(r => activeFilter === 'all' || category(r) === activeFilter)) {
+      const row = document.createElement('tr');
+      const urlCell = row.insertCell();
+      const details = document.createElement('details');
+      const summary = document.createElement('summary');
+      const mainUrl = document.createElement('span'); mainUrl.className = 'result-url'; mainUrl.textContent = result.input;
+      const subUrl = document.createElement('small'); subUrl.textContent = result.finalUrl && result.finalUrl !== result.input ? `→ ${result.finalUrl}` : result.title || 'View response details';
+      summary.append(mainUrl, subUrl); details.append(summary);
+      const detailBody = document.createElement('div'); detailBody.className = 'detail-body';
+      if (result.error) { const p = document.createElement('p'); p.textContent = `Checker note: ${result.error}`; detailBody.append(p); }
+      for (const hop of result.hops) { const p = document.createElement('p'); p.className = 'hop-line'; p.textContent = `${hop.status}  ${hop.url}${hop.location ? `  →  ${hop.location}` : ''}  ·  ${hop.ms} ms`; detailBody.append(p); }
+      for (const [label, value] of [['Expected destination', result.expectedUrl], ['Canonical', result.canonical], ['Robots directives', result.robots], ['Content type', result.contentType]] as const) { if (value) { const p = document.createElement('p'); p.textContent = `${label}: ${value}`; detailBody.append(p); } }
+      details.append(detailBody); urlCell.append(details);
+      const statusLabel = result.errorType === 'blocked' ? 'Checker blocked' : result.errorType && result.errorType !== 'redirect' ? 'Could not verify' : result.errorType === 'redirect' && result.status ? `${result.status} · incomplete` : result.status ? `${result.status} ${result.statusText}` : 'No response';
+      const statusCell = cell(row, statusLabel, `status-cell status-${result.errorType && result.errorType !== 'redirect' ? 'unverified' : result.status ? Math.floor(result.status / 100) : 'error'}`);
+      statusCell.setAttribute('aria-label', `Status: ${statusCell.textContent}`);
+      cell(row, result.ms ? `${result.ms} ms` : result.error ? '—' : '0 ms', 'num-cell'); cell(row, String(Math.max(0, result.hops.length - 1)), 'num-cell');
+      const signal = row.insertCell();
+      if (!result.issues.length) { const tag = document.createElement('span'); tag.className = 'signal good'; tag.textContent = 'Looks good'; signal.append(tag); }
+      else for (const issue of result.issues) { const tag = document.createElement('span'); tag.className = `signal${category(result) === 'unverified' ? ' unverified' : ''}`; tag.textContent = issue; signal.append(tag); }
+      resultsBody.append(row);
+    }
+  }
+  textarea.addEventListener('input', updateCount);
+  document.querySelector('#sample-button')!.addEventListener('click', () => { expected.clear(); textarea.value = 'https://example.com\nhttp://example.com\nhttps://www.wikipedia.org/'; updateCount(); textarea.focus(); });
+  function csvFields(line:string) { const fields:string[]=[]; let value=''; let quoted=false; for(let i=0;i<line.length;i++){const char=line[i];if(char==='"'){if(quoted&&line[i+1]==='"'){value+='"';i++;}else quoted=!quoted;}else if(char===','&&!quoted){fields.push(value.trim());value='';}else value+=char;}fields.push(value.trim());return fields; }
+  document.querySelector<HTMLInputElement>('#file-input')!.addEventListener('change', async event => {
+    const file = (event.target as HTMLInputElement).files?.[0]; if (!file) return;
+    if (file.size > 100_000) return error('Choose a file smaller than 100 KB.');
+    expected.clear(); const text = (await file.text()).replace(/^\ufeff/,''); const found:string[]=[];
+    for(const line of text.split(/\r?\n/)){const [source,target]=file.name.toLowerCase().endsWith('.csv')?csvFields(line):[line.trim()];if(!source||! /^(https?:\/\/|[\w.-]+\.[a-z]{2,})/i.test(source))continue;const normalized=normalize(source);found.push(normalized);if(target){try{const url=new URL(normalize(target));if(['http:','https:'].includes(url.protocol))expected.set(normalized,url.href);}catch{/* Skip invalid expected destination. */}}}
+    textarea.value = [...new Set(found)].join('\n'); updateCount(); error(''); (event.target as HTMLInputElement).value='';
+  });
+  cancel.addEventListener('click', () => controller?.abort());
+  button.addEventListener('click', async () => {
+    const urls = lines().map(normalize);
+    if (!urls.length) return error('Add at least one URL to check.');
+    if (urls.length > 50) return error('This check supports up to 50 unique URLs.');
+    const invalid = urls.find(value => { try { const u = new URL(value); return !['http:', 'https:'].includes(u.protocol) || !u.hostname.includes('.'); } catch { return true; } });
+    if (invalid) return error(`Please check this URL: ${invalid}`);
+    error(''); results = []; controller = new AbortController(); button.disabled = true; cancel.hidden = false; resultsSection.hidden = false; progress.textContent = `Processing 0 of ${urls.length}…`; render();
+    try {
+      for (let i = 0; i < urls.length; i += 5) {
+        const response = await fetch('/api/check/', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ urls: urls.slice(i, i + 5) }), signal: controller.signal });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'The check could not be completed.');
+        for(const item of data.results as Result[]){const target=expected.get(item.input);if(target){item.expectedUrl=target;if(item.finalUrl&&!item.error&&item.finalUrl!==target)item.issues.push('Unexpected destination');}results.push(item);} progress.textContent = `Processed ${results.length} of ${urls.length}`; render();
+      }
+      progress.textContent = `Done — ${results.length} URL${results.length === 1 ? '' : 's'} processed.`;
+    } catch (cause) {
+      if (controller.signal.aborted) progress.textContent = `Stopped after ${results.length} URLs.`;
+      else error(cause instanceof Error ? cause.message : 'The check could not be completed.');
+    } finally { controller = null; button.disabled = false; cancel.hidden = true; }
+  });
+  document.querySelectorAll<HTMLButtonElement>('.filter').forEach(filter => filter.addEventListener('click', () => { activeFilter = filter.dataset.filter || 'all'; document.querySelectorAll('.filter').forEach(node => node.classList.toggle('active', node === filter)); render(); }));
+  document.querySelector('#export-button')!.addEventListener('click', () => {
+    const columns = ['Input URL','Expected destination','Final URL','Status','Status text','Time (ms)','Redirect hops','Redirect path','Title','Canonical','Robots','Content type','Issues','Error'];
+    const rows = results.map(r => [r.input,r.expectedUrl,r.finalUrl,r.status,r.statusText,r.ms,Math.max(0,r.hops.length-1),r.hops.map(h=>`${h.status} ${h.url}`).join(' → '),r.title,r.canonical,r.robots,r.contentType,r.issues.join('; '),r.error]);
+    const csv = [columns,...rows].map(row => row.map(value => `"${String(value ?? '').replaceAll('"','""')}"`).join(',')).join('\r\n');
+    const url = URL.createObjectURL(new Blob(['\ufeff',csv], { type:'text/csv;charset=utf-8' }));
+    const link = document.createElement('a'); link.href = url; link.download = `statusgrid-${new Date().toISOString().slice(0,10)}.csv`; link.click(); setTimeout(()=>URL.revokeObjectURL(url),1000);
+  });
+</script>
+
+<style>
+.hero{background:#101c28;color:#fff;position:relative;overflow:hidden;padding:104px 0 135px}.hero-grid{display:grid;grid-template-columns:1.1fr .9fr;align-items:center;gap:55px;position:relative;z-index:1}.hero h1{font-size:clamp(46px,5.8vw,77px);max-width:720px;margin:23px 0 25px}.hero h1 em{font-style:normal;color:#d9f879}.hero-copy>p{color:#aebec6;font-size:18px;max-width:570px;margin-bottom:26px}.hero-points{display:flex;gap:22px;flex-wrap:wrap;color:#b9c9c8;font-size:13px}.hero-points span{display:flex;align-items:center;gap:8px}.hero-points i{width:6px;height:6px;border-radius:50%;background:#d9f879}.hero-link{display:inline-flex;gap:12px;margin-top:36px;color:#d9f879;font-weight:700;border-bottom:1px solid #d9f879;padding-bottom:7px}.hero-visual{background:#172837;border:1px solid #355060;border-radius:18px;box-shadow:0 35px 80px #0004;transform:rotate(2deg);padding:0 25px 24px}.visual-top{height:63px;border-bottom:1px solid #344854;display:flex;align-items:center;justify-content:space-between;font:700 10px 'Space Grotesk';letter-spacing:1.6px;color:#91a6ae}.visual-top>span:first-child{display:flex;gap:5px}.visual-top i{width:7px;height:7px;border-radius:50%;background:#5c6d78}.visual-top i:first-child{background:#e19b87}.visual-top i:nth-child(2){background:#e9ce7f}.visual-top i:nth-child(3){background:#d9f879}.trace-line{display:flex;align-items:center;gap:18px;padding:26px 3px}.trace-dot{height:35px;width:35px;display:grid;place-items:center;border:1px solid #4a666d;color:#c6e2bf;border-radius:50%;font-size:11px}.trace-line div{flex:1;min-width:0}.trace-line small,.visual-note small{display:block;color:#78909a;font-size:10px;letter-spacing:1px;margin-bottom:5px}.trace-line strong{font:600 14px 'Space Grotesk';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}.trace-code{font-size:12px;padding:7px 10px;border-radius:6px}.trace-code.redirect{background:#544931;color:#f1d278}.trace-code.success{background:#2b4c40;color:#d9f879}.trace-connector{height:30px;border-left:1px dashed #668372;margin:-12px 0 -12px 20px}.visual-note{background:#213a39;border:1px solid #385e4c;border-radius:9px;padding:16px;display:flex;align-items:center;gap:12px;margin-top:7px}.visual-note .pulse{width:9px;height:9px;border-radius:50%;background:#d9f879;box-shadow:0 0 0 5px #d9f87920}.visual-note div{flex:1}.visual-note strong{font-size:13px}.visual-note small{margin:5px 0 0;letter-spacing:0}.visual-note>span:last-child{color:#d9f879}.hero-gridlines{position:absolute;inset:0;background-image:linear-gradient(#ffffff08 1px,transparent 1px),linear-gradient(90deg,#ffffff08 1px,transparent 1px);background-size:70px 70px;mask-image:linear-gradient(90deg,transparent,#000)}.tool-section{padding:0 0 90px;background:#f7f9f7}.tool-intro{display:flex;align-items:end;justify-content:space-between;gap:50px;padding:75px 0 35px}.tool-intro .eyebrow{color:#597a38}.tool-intro h2{font-size:clamp(30px,4vw,48px);max-width:590px;margin-top:14px}.tool-intro p{max-width:395px;color:#6b7b82;margin:0}.tool-shell{border:1px solid #dce6df;border-radius:17px;background:white;box-shadow:0 20px 55px #1735280d;overflow:hidden}.tool-bar{height:59px;background:#edf2ee;border-bottom:1px solid #dce6df;display:flex;align-items:center;justify-content:space-between;padding:0 26px;font:700 14px 'Space Grotesk'}.tool-icon{color:#416b56;font-size:24px;vertical-align:middle;margin-right:7px}.tool-cap{font:700 10px 'DM Sans';letter-spacing:1.4px;color:#6d807a}.tool-body{padding:27px}.input-head,.input-footer,.tool-actions{display:flex;align-items:center;justify-content:space-between;gap:20px}.input-head{font-weight:700;margin-bottom:12px}.input-head span{color:#698279;font-size:13px}.input-head .over-limit{color:#ba503d}textarea{width:100%;min-height:175px;resize:vertical;border:1px solid #cfdcd3;border-radius:9px;background:#fbfdfb;padding:18px;font:14px/1.8 'Space Grotesk',monospace;color:#152d2c;outline:none}textarea:focus{border-color:#6d9c78;box-shadow:0 0 0 3px #91cba336}textarea::placeholder{color:#a1b2aa}.input-footer{font-size:12px;color:#71837b;margin-top:12px}.input-footer>div{display:flex;gap:20px}.text-button{background:none;border:0;padding:0;color:#2e6954;font-weight:700;cursor:pointer}.text-button:hover{text-decoration:underline}.tool-actions{justify-content:flex-start;margin-top:27px}.check-button{min-width:170px}.check-button:disabled{opacity:.65;cursor:wait}.cancel-button{border:0;background:none;color:#aa4b39;font-weight:700}.tool-actions #progress-text{font-size:13px;color:#4d695e}.error-message{margin-top:17px;background:#fff2ed;color:#9c3f2b;border:1px solid #f3c7bc;border-radius:7px;padding:10px 12px;font-size:13px}.results{margin-top:55px}.results-top{display:flex;align-items:end;justify-content:space-between;gap:20px}.results-top .eyebrow{color:#52743b}.results-top h3{font-size:34px;margin:12px 0 3px}.results-top p{color:#687b75;margin:0}.filter-row{display:flex;gap:8px;flex-wrap:wrap;margin:27px 0 16px}.filter{background:#edf2ee;border:1px solid #dce5dc;color:#50635a;border-radius:20px;padding:8px 13px;font-size:12px;font-weight:700}.filter.active{background:#172d2d;color:white;border-color:#172d2d}.filter span{opacity:.7;margin-left:4px}.table-wrap{background:white;border:1px solid #dce5de;border-radius:12px;overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:760px}th{text-align:left;background:#f0f4ef;color:#64776c;text-transform:uppercase;letter-spacing:1px;font-size:10px;padding:16px 18px}td{border-top:1px solid #e8eee8;padding:17px 18px;font-size:13px;vertical-align:top}td:first-child{max-width:370px;width:38%}details summary{cursor:pointer;list-style:none}details summary:before{content:'▸';color:#5e8d65;margin-right:7px}details[open] summary:before{content:'▾'}.result-url{font-weight:700;overflow-wrap:anywhere}.result-url+small{display:block;color:#82938a;margin:5px 0 0 17px;overflow-wrap:anywhere}.detail-body{margin:13px 0 0 17px;padding:12px;background:#f2f6f1;border-radius:8px;color:#596c63;max-width:520px;overflow-wrap:anywhere}.detail-body p{font-size:11px;line-height:1.5;margin:3px 0}.detail-body .hop-line{font-family:'Space Grotesk',monospace}.status-cell{font-weight:700;white-space:nowrap}.status-2{color:#267b53}.status-3{color:#a56e1b}.status-4,.status-5,.status-error{color:#bb4937}.num-cell{white-space:nowrap;color:#53695d}.signal{display:inline-block;padding:5px 8px;background:#fbecdf;color:#985c26;border-radius:5px;margin:0 4px 5px 0;font-size:10px;font-weight:700;white-space:nowrap}.signal.good{background:#e5f3e4;color:#347f50}.results-note{font-size:12px;color:#77877f;margin-top:15px}.feature-section{padding:95px 0;background:#ecf2e9}.feature-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:37px}.feature-card{padding:28px;background:#fff;border:1px solid #dce8da;border-radius:13px}.feature-icon{width:42px;height:42px;display:grid;place-items:center;border-radius:9px;background:#e9f6d5;color:#355d3d;font-size:25px;margin-bottom:32px}.feature-card h3{font-size:21px}.feature-card p{color:#657770;font-size:14px;margin-bottom:0}.workflow-section{padding:100px 0;background:#17312e;color:white}.workflow-grid{display:grid;grid-template-columns:1fr 1fr;gap:120px;align-items:center}.workflow-grid h2{font-size:clamp(36px,4.5vw,54px);margin:18px 0}.workflow-grid p{color:#afc6bf;max-width:480px}.workflow-grid a{color:#d9f879;font-weight:700;display:inline-block;margin-top:15px}.steps>div{display:flex;gap:24px;padding:28px 0;border-bottom:1px solid #47645c}.steps>div:first-child{border-top:1px solid #47645c}.steps b{font:600 14px 'Space Grotesk';color:#d9f879}.steps strong,.steps small{display:block}.steps strong{font:700 20px 'Space Grotesk';margin-bottom:8px}.steps small{color:#a5beb5;font-size:14px}.learn-section{padding:100px 0}.learn-head{display:flex;align-items:end;justify-content:space-between;gap:20px}.learn-head>a{font-weight:700;color:#2f694d;white-space:nowrap}.learn-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:35px}.learn-card{border:1px solid #dce5dc;border-radius:13px;background:white;padding:28px;display:flex;flex-direction:column;min-height:310px;transition:transform .2s,box-shadow .2s}.learn-card:hover{transform:translateY(-4px);box-shadow:0 15px 30px #1a36210d}.learn-tag{font-size:11px;text-transform:uppercase;letter-spacing:1.2px;font-weight:700;color:#58805b}.learn-card h3{font-size:26px;margin:26px 0 10px}.learn-card p{color:#687a70;font-size:14px}.learn-arrow{margin-top:auto;font-weight:700;color:#2c704f;font-size:13px}.bottom-cta{padding:70px 0;background:#d9f879}.bottom-cta .container{display:flex;align-items:center;justify-content:space-between;gap:30px}.bottom-cta .eyebrow{color:#446e2e}.bottom-cta .eyebrow:before{background:#3f7033}.bottom-cta h2{font-size:clamp(30px,4vw,45px);margin:15px 0 5px}.bottom-cta p{margin:0;color:#4b6946}.bottom-cta .button{background:#17312e;color:white;white-space:nowrap}@media(max-width:980px){.hero-grid{gap:25px}.hero-visual{padding-inline:15px}.feature-grid{grid-template-columns:repeat(2,1fr)}.workflow-grid{gap:50px}}@media(max-width:740px){.hero{padding:65px 0 85px}.hero-grid,.workflow-grid{grid-template-columns:1fr}.hero-visual{transform:none;margin-top:10px}.tool-intro{display:block;padding-top:55px}.tool-intro p{margin-top:18px}.input-footer{align-items:flex-start;flex-direction:column}.results-top{align-items:flex-start}.feature-grid,.learn-grid{grid-template-columns:1fr}.learn-head{display:block}.learn-head>a{display:block;margin-top:20px}.bottom-cta .container{align-items:flex-start;flex-direction:column}.feature-section,.workflow-section,.learn-section{padding:70px 0}}
+</style>
+<style>
+.faq-section{padding:90px 0;background:#eef3ed}.faq-grid{display:grid;grid-template-columns:.85fr 1.15fr;gap:90px}.faq-list{border-top:1px solid #d2dfd5}.faq-list details{border-bottom:1px solid #d2dfd5;padding:21px 0}.faq-list summary{font:700 17px 'Space Grotesk',sans-serif;cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:15px}.faq-list summary:after{content:'+';color:#4c8053;font-size:22px;line-height:18px}.faq-list details[open] summary:after{content:'−'}.faq-list p{color:#64786b;font-size:14px;margin:12px 30px 0 0}@media(max-width:740px){.faq-section{padding:65px 0}.faq-grid{grid-template-columns:1fr;gap:30px}}
+</style>

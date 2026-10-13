@@ -1,0 +1,32 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="How the Bulk Status Checker Works" description="Understand how StatusGrid checks URLs, follows redirects, reads SEO signals, and limits requests to public destinations.">
+  <section class="page-hero">
+    <div class="container">
+      <span class="eyebrow">Transparent by design</span>
+      <h1>How a StatusGrid check works.</h1>
+      <p>What we request, what we report, and how to interpret the result.</p>
+    </div>
+  </section>
+  <section class="content-section">
+    <div class="container">
+      <div class="prose">
+        <h2>One request path per URL</h2>
+        <p>Paste up to 50 public HTTP or HTTPS URLs. The browser sends small batches to a Cloudflare Pages Function. It requests each URL, records the response code and time, and follows redirects through up to six hops. Every redirect target is validated before another request is made.</p>
+        <h2>Migration map comparison</h2>
+        <p>To verify a migration, import a CSV with the source URL in column one and its expected final destination in column two. StatusGrid compares the observed final URL with that destination and flags mismatches. The expected URL and finding are included in the CSV export. Comparison is exact after URL normalization, so a different trailing slash or query string counts as a mismatch.</p>
+        <h2>Signals from the response</h2>
+        <p>For a final HTML response, the checker reads a limited portion of the document to find its title, canonical link, and robots meta directive. It also reads the content type and X-Robots-Tag response header. The report highlights server and client errors, long redirect chains, final HTTP URLs, noindex directives, and canonicals that differ from the final URL.</p>
+        <h2>Why results sometimes differ</h2>
+        <p>The request comes from Cloudflare's network, with its own location and user agent. A website may respond differently to browsers, logged-in visitors, search crawlers, or automated checks. Bot protection can return 403, and an intermittent outage may disappear on the next request. A single check is a snapshot, not uptime monitoring.</p>
+        <h2>Safety and limits</h2>
+        <p>The checker accepts public destinations on standard HTTP and HTTPS ports. It rejects IP literals and local hostnames, including redirect destinations. Cloudflare's outbound fetch restrictions also apply. Each request has an eight-second timeout and reads no more than 128 KB of HTML. Batches are limited to 50 URLs in the interface and five URLs per API request. The per-minute limit is best effort within each Function instance.</p>
+        <h2>What it does not determine</h2>
+        <p>StatusGrid does not render JavaScript, crawl links across a site, check robots.txt permissions, or know which pages Google indexed. Use browser inspection, server logs, and Search Console to verify those questions. If a status or canonical finding is important, confirm it with a second method before changing production rules.</p>
+      </div>
+      <div class="cta-strip"><div><h2>Ready to check a list?</h2><p>Start with your most important pages or migration URLs.</p></div><a class="button" href="/#checker">Open the checker →</a></div>
+    </div>
+  </section>
+</Base>
