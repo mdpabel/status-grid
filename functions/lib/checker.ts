@@ -12,7 +12,7 @@ export type CheckResult = {
   title: string | null;
   issues: string[];
   error: string | null;
-  errorType: 'blocked' | 'network' | 'redirect' | 'input' | null;
+  errorType: 'blocked' | 'limited' | 'network' | 'redirect' | 'input' | null;
 };
 
 const statusNames: Record<number, string> = {
@@ -147,7 +147,17 @@ export async function checkUrl(input: string, ownHostname: string): Promise<Chec
       result.robots = [response.xRobots, signals.robots].filter(Boolean).join('; ') || null;
       break;
     }
-    if (result.status && result.status >= 500) result.issues.push('Server error');
+    const final = result.finalUrl ? new URL(result.finalUrl) : null;
+    const googleChallenge = !!final && /(^|\.)google\.com$/i.test(final.hostname) && final.pathname.startsWith('/sorry/');
+    if (googleChallenge || result.status === 429 || result.status === 403) {
+      result.errorType = 'limited';
+      result.error = googleChallenge
+        ? 'Google redirected this automated request to its unusual-traffic page. This does not show that the requested page is unavailable to visitors.'
+        : result.status === 429
+          ? 'The destination rate limited this checker request. Its response to visitors may differ.'
+          : 'The destination refused this checker request with 403. An access rule, login requirement, or automated-request filter may be involved; check in a browser.';
+      result.issues.push(googleChallenge ? 'Google limited automated check' : result.status === 429 ? 'Request rate limited' : 'Access denied to checker');
+    } else if (result.status && result.status >= 500) result.issues.push('Server error');
     else if (result.status && result.status >= 400) result.issues.push('Client error');
     else if (result.status && result.status >= 300 && result.status < 400) result.issues.push('Unresolved redirect');
     if (result.hops.length > 3) result.issues.push('Long redirect chain');

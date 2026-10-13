@@ -40,7 +40,7 @@ import Base from '../layouts/Base.astro';
         <div id="network-notice" class="network-notice" hidden><strong>The checker server cannot reach external websites.</strong> These results say nothing about whether the sites are online. Run StatusGrid on a server with outbound HTTP and HTTPS access.</div>
         <div class="filter-row" role="group" aria-label="Filter results"><button class="filter active" data-filter="all" type="button">All <span id="count-all">0</span></button><button class="filter" data-filter="issues" type="button">Needs attention <span id="count-issues">0</span></button><button class="filter" data-filter="unverified" type="button">Could not verify <span id="count-unverified">0</span></button><button class="filter" data-filter="redirects" type="button">Redirected <span id="count-redirects">0</span></button><button class="filter" data-filter="healthy" type="button">Healthy <span id="count-healthy">0</span></button></div>
         <div class="table-wrap"><table><thead><tr><th>URL / redirect path</th><th>Final status</th><th>Time</th><th>Hops</th><th>Signals</th></tr></thead><tbody id="results-body"></tbody></table></div>
-        <p class="results-note">A missing response means this checker could not verify the URL. It does not prove the website is offline.</p>
+        <p class="results-note">A missing response, 403, or 429 may be specific to this server-side check. Compare the URL in a browser before treating it as a site-wide outage.</p>
       </div>
     </div>
   </section>
@@ -62,7 +62,7 @@ import Base from '../layouts/Base.astro';
 </Base>
 
 <script>
-  type Result = { input:string; finalUrl:string|null; expectedUrl?:string; status:number|null; statusText:string; ms:number; hops:{url:string;status:number;location:string|null;ms:number}[]; contentType:string|null; canonical:string|null; robots:string|null; title:string|null; issues:string[]; error:string|null; errorType:'blocked'|'network'|'redirect'|'input'|null };
+  type Result = { input:string; finalUrl:string|null; expectedUrl?:string; status:number|null; statusText:string; ms:number; hops:{url:string;status:number;location:string|null;ms:number}[]; contentType:string|null; canonical:string|null; robots:string|null; title:string|null; issues:string[]; error:string|null; errorType:'blocked'|'limited'|'network'|'redirect'|'input'|null };
   const textarea = document.querySelector<HTMLTextAreaElement>('#urls')!;
   const count = document.querySelector<HTMLElement>('#url-count')!;
   const button = document.querySelector<HTMLButtonElement>('#check-button')!;
@@ -100,7 +100,7 @@ import Base from '../layouts/Base.astro';
       for (const hop of result.hops) { const p = document.createElement('p'); p.className = 'hop-line'; p.textContent = `${hop.status}  ${hop.url}${hop.location ? `  →  ${hop.location}` : ''}  ·  ${hop.ms} ms`; detailBody.append(p); }
       for (const [label, value] of [['Expected destination', result.expectedUrl], ['Canonical', result.canonical], ['Robots directives', result.robots], ['Content type', result.contentType]] as const) { if (value) { const p = document.createElement('p'); p.textContent = `${label}: ${value}`; detailBody.append(p); } }
       details.append(detailBody); urlCell.append(details);
-      const statusLabel = result.errorType === 'blocked' ? 'Checker blocked' : result.errorType && result.errorType !== 'redirect' ? 'Could not verify' : result.errorType === 'redirect' && result.status ? `${result.status} · incomplete` : result.status ? `${result.status} ${result.statusText}` : 'No response';
+      const statusLabel = result.errorType === 'blocked' ? 'Checker blocked' : result.errorType === 'limited' && result.status ? `${result.status} ${result.statusText} · access limited` : result.errorType && result.errorType !== 'redirect' ? 'Could not verify' : result.errorType === 'redirect' && result.status ? `${result.status} · incomplete` : result.status ? `${result.status} ${result.statusText}` : 'No response';
       const statusCell = cell(row, statusLabel, `status-cell status-${result.errorType && result.errorType !== 'redirect' ? 'unverified' : result.status ? Math.floor(result.status / 100) : 'error'}`);
       statusCell.setAttribute('aria-label', `Status: ${statusCell.textContent}`);
       cell(row, result.ms ? `${result.ms} ms` : result.error ? '—' : '0 ms', 'num-cell'); cell(row, String(Math.max(0, result.hops.length - 1)), 'num-cell');
